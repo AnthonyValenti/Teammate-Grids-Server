@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
+import random
 
 app = FastAPI()
 
@@ -46,24 +47,39 @@ def getPlayedWithQuery():
     """
     return query
 
-def getRandomPlayerPair():
+
+def getRandomPlayer():
+    query = """
+    SELECT name
+    FROM playerNames
+    ORDER BY RANDOM()
+    LIMIT 1;
+    """
     conn = sqlite3.connect('teammateGrid.db')
     cursor = conn.cursor()
-    solution=[]
-    query = """
-        SELECT name
-        FROM playerNames
-        ORDER BY RANDOM()
-        LIMIT 2;
-        """
-    while len(solution)<8:
-        result=cursor.execute(query).fetchall()
-        pair=[]
-        for name in result:
-            pair.append(name[0])
-        solution = getSolution(pair[0],pair[1])
-    return pair,solution
+    result=cursor.execute(query).fetchone()
+    conn.close()
+    name = result[0]
+    return(name)
     
+def getRandomPlayedWith(player):
+    query = """
+        SELECT *
+        FROM skaters20to22
+        WHERE ? IN (column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12, column13, column14, column15, column16, column17, column18, column19)
+        ORDER BY RANDOM()
+        LIMIT 1;
+        """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    result=cursor.execute(query,(player,)).fetchone()
+    conn.close()
+    resultList = list(result)
+    random.shuffle(resultList)
+    resultList.remove(player)
+    name=resultList[0]
+    return(name)
+        
 
 
 def checkAnswer(player1,player2):
@@ -120,10 +136,18 @@ def validate_answer(player_list: PlayerList):
 # It will only return names in which a possible answer exists
 @app.get("/playerNames")
 def get_player_names():
-    result1=getRandomPlayerPair()
-    result2=getRandomPlayerPair()
-    pair1,solution1=result1
-    pair2,solution2=result2
-    return {"pairs": (pair1,pair2),
-            "solution":(solution1,solution2)
+    player0=getRandomPlayer()
+    player1=getRandomPlayedWith(player0)
+    player2=getRandomPlayedWith(player1)
+    player3=getRandomPlayedWith(player2)
+    return {
+            "rowPlayer1": player0,
+            "colPlayer1": player1,
+            "rowPlayer2": player2,
+            "colPlayer2": player3,
+            "solution0_0":getSolution(player0,player1),
+            "solution0_1":getSolution(player0,player3),
+            "solution1_0":getSolution(player1,player2),
+            "solution1_1":getSolution(player2,player3),
+
             }
