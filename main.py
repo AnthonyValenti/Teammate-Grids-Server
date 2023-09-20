@@ -68,8 +68,7 @@ def getRandomPlayedWith(player):
         SELECT *
         FROM skaters20to22
         WHERE ? IN (column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12, column13, column14, column15, column16, column17, column18, column19)
-        ORDER BY RANDOM()
-        LIMIT 1;
+        ORDER BY RANDOM();
         """
     conn = sqlite3.connect('teammateGrid.db')
     cursor = conn.cursor()
@@ -79,24 +78,13 @@ def getRandomPlayedWith(player):
     random.shuffle(resultList)
     resultList.remove(player)
     name=resultList[0]
+    if(len(getSolution(name,player))<2):
+        getRandomPlayedWith(player)
     return(name)
         
 
 
-def checkAnswer(player1,player2):
-    conn = sqlite3.connect('teammateGrid.db')
-    cursor = conn.cursor()
-    results =[]
-    cursor.execute(getPlayerQuery(),(player1,player2))
-    result=cursor.fetchone()
-    conn.close()
-    if result is not None:
-        results.append(result)
-    if not results:
-        return False
-    else:
-        return True
-    
+  
 def getSolution(rowPlayer,colPlayer):
     conn = sqlite3.connect('teammateGrid.db')
     cursor = conn.cursor()
@@ -117,6 +105,10 @@ def getSolution(rowPlayer,colPlayer):
     conn.close()
     intersection = [item for item in playedWithColPlayer if item in playedWithRowPlayer]
     intersection = list(filter(None, intersection))
+    if rowPlayer in intersection:
+        intersection.remove(rowPlayer)
+    if colPlayer in intersection:
+        intersection.remove(colPlayer)
     return intersection
 
  
