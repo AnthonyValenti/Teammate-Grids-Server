@@ -11,6 +11,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:19006",
+    "*",
 ]
 
 app.add_middleware(
@@ -118,20 +119,7 @@ def getSolution(rowPlayer,colPlayer):
     intersection = list(filter(None, intersection))
     return intersection
 
-
-# This endpoint takes 3 player names, [0] is the player on the row [1] is player on the col, [2] is the users guess
-@app.post("/validate")
-def validate_answer(player_list: PlayerList):
-    if checkAnswer(player_list.playerNames[0],player_list.playerNames[2]) and checkAnswer(player_list.playerNames[1],player_list.playerNames[2]):
-        return{"msg": "correct",
-               "solution": getSolution(player_list.playerNames[0],player_list.playerNames[1])
-               }
-    else:
-        return{"msg": "incorrect",
-                "solution": getSolution(player_list.playerNames[0],player_list.playerNames[1])
-
-                }
-    
+ 
 # This endpoint will return the row player names and col player names to be used for the game
 # It will only return names in which a possible answer exists
 @app.get("/playerNames")
