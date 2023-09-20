@@ -111,23 +111,32 @@ def getSolution(rowPlayer,colPlayer):
         intersection.remove(colPlayer)
     return intersection
 
- 
-# This endpoint will return the row player names and col player names to be used for the game
-# It will only return names in which a possible answer exists
-@app.get("/playerNames")
-def get_player_names():
+def generateNames():
     player0=getRandomPlayer()
     player1=getRandomPlayedWith(player0)
     player2=getRandomPlayedWith(player1)
     player3=getRandomPlayedWith(player2)
+    names=[player0,player1,player2,player3]
+    duplicate = len(names) != len(set(names))
+    if duplicate:
+        generateNames()
+    else:
+        return names
+
+
+# This endpoint will return the row player names and col player names to be used for the game
+# It will only return names in which a possible answer exists
+@app.get("/playerNames")
+def get_player_names():
+    players=generateNames()
     return {
-            "rowPlayer1": player0,
-            "colPlayer1": player1,
-            "rowPlayer2": player2,
-            "colPlayer2": player3,
-            "solution0_0":getSolution(player0,player1),
-            "solution0_1":getSolution(player0,player3),
-            "solution1_0":getSolution(player1,player2),
-            "solution1_1":getSolution(player2,player3),
+            "rowPlayer1": players[0],
+            "colPlayer1": players[1],
+            "rowPlayer2": players[2],
+            "colPlayer2": players[3],
+            "solution0_0":getSolution(players[0],players[1]),
+            "solution0_1":getSolution(players[0],players[3]),
+            "solution1_0":getSolution(players[1],players[2]),
+            "solution1_1":getSolution(players[2],players[3]),
 
             }
