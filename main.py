@@ -8,6 +8,11 @@ import random
 
 app = FastAPI()
 
+class User(BaseModel):
+    username: str
+    password: str
+
+
 origins = [
     "http://localhost",
     "http://localhost:19006",
@@ -140,3 +145,48 @@ def get_player_names():
             "solution1_1":getSolution(players[2],players[3]),
 
             }
+@app.post("/login")
+def user_login(user: User):
+    query = """
+        SELECT *
+        FROM users
+        WHERE username = ?
+        AND password = ?;
+        """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    result=cursor.execute(query,(user.username,user.password)).fetchone()
+    conn.close()
+    if result is not None and str(result[0])==str(user.username) and str(result[1])==str(user.password):
+        return{
+            "msg":"ok",
+            "user":user.username
+            }
+    return{
+        "msg":"failed"
+        }
+
+@app.post("/register")
+def user_register(user: User):
+    query = """
+        INSERT INTO users 
+        values(?,?)
+        """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    msg=""
+    try:
+        cursor.execute(query,(user.username,user.password))
+        cursor.commit()
+        msg="ok"
+    except sqlite3.IntegrityError:
+        msg="failed"
+
+    except Exception as e:
+        msg="failed"
+    finally:
+        conn.close()    
+        return{
+            "msg": msg,
+            "user": user.username
+        }
