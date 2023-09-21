@@ -212,3 +212,29 @@ def user_register(user: User):
             "msg": msg,
             "user": user.username
         }
+    
+#This function will get what quartile a player is in based on points, this will be used to determine a score multiplier
+@app.post("/points")
+def get_points(name: str):
+    query = """
+    WITH QuartileData AS (
+    SELECT
+        name,
+        points,
+        NTILE(4) OVER (ORDER BY points) AS Quartile
+    FROM
+        playerNames
+    )
+
+    SELECT
+    name,
+    Quartile
+    FROM
+    QuartileData
+    WHERE
+    name = ?;
+    """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    result=cursor.execute(query,(name,)).fetchone()
+    return {"mult":result[1]}
