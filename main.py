@@ -168,20 +168,15 @@ def user_login(user: User):
 
 @app.post("/register")
 def user_register(user: User):
-    query = """
-        INSERT INTO users 
-        values(?,?)
-        """
     conn = sqlite3.connect('teammateGrid.db')
     cursor = conn.cursor()
     msg=""
     try:
-        cursor.execute(query,(user.username,user.password))
-        cursor.commit()
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?);", (user.username, user.password))
+        conn.commit()
         msg="ok"
     except sqlite3.IntegrityError:
         msg="failed"
-
     except Exception as e:
         msg="failed"
     finally:
