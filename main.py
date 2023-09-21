@@ -61,6 +61,20 @@ def getPlayedWithQuery():
     """
     return query
 
+def playedTogethor(player1,player2):
+    query = """
+    SELECT *
+    FROM skaters20to22
+    WHERE ? IN (column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12, column13, column14, column15, column16, column17, column18, column19);
+    """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    result=cursor.execute(query,(player1,)).fetchall()
+    conn.close()
+    for row in result:
+        if player2 in row:
+            return True
+    return False
 
 def getRandomPlayer():
     query = """
@@ -87,6 +101,8 @@ def getRandomPlayedWith(player):
     cursor = conn.cursor()
     result=cursor.execute(query,(player,)).fetchone()
     conn.close()
+    if result is None:
+        getRandomPlayedWith(player)
     resultList = list(result)
     random.shuffle(resultList)
     resultList.remove(player)
@@ -129,13 +145,16 @@ def generateNames():
     player1=getRandomPlayedWith(player0)
     player2=getRandomPlayedWith(player1)
     player3=getRandomPlayedWith(player2)
-    names=[player0,player1,player2,player3]
-    duplicate = len(names) != len(set(names))
-    if duplicate or None in names:
-        generateNames()
-    else:
-        return names
-
+    if None in [player0, player1, player2, player3]:
+        return generateNames()  
+    names = [player0, player1, player2, player3]
+    if len(names) != len(set(names)):
+        return generateNames()  
+    if playedTogethor(player0, player2):
+        return generateNames()
+    if playedTogethor(player1, player3):
+        return generateNames()  
+    return names
 
 # This endpoint will return the row player names and col player names to be used for the game
 # It will only return names in which a possible answer exists

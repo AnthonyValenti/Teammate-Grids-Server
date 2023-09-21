@@ -1,6 +1,11 @@
 
 PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
+-- Drop all tables if exists
+DROP TABLE IF EXISTS playerNames;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS skaters20to22;
+DROP TABLE IF EXISTS scores;
 
 -- Table: playerNames
 CREATE TABLE IF NOT EXISTS playerNames  (name TEXT, points INTEGER);
