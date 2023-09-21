@@ -120,7 +120,7 @@ def generateNames():
     player3=getRandomPlayedWith(player2)
     names=[player0,player1,player2,player3]
     duplicate = len(names) != len(set(names))
-    if duplicate:
+    if duplicate or None in names:
         generateNames()
     else:
         return names
