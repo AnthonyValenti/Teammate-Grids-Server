@@ -276,4 +276,14 @@ def save_points(scores: Score):
             "score": scores.score,
             "date": date,
         }
-
+    
+@app.post("/scores")
+def get_user_scores(user: Player):
+    query = """
+    SELECT * from scores
+    where username = ?;
+    """
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    result=cursor.execute(query,(user.name,)).fetchall()
+    return {"scores": result}
