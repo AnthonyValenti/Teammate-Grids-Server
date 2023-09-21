@@ -39,8 +39,8 @@ app.add_middleware(
 )
 
 
-class PlayerList(BaseModel):
-    playerNames: List[str]
+class Player(BaseModel):
+    name: str
 
 
 def getPlayerQuery():
@@ -215,7 +215,7 @@ def user_register(user: User):
     
 #This function will get what quartile a player is in based on points, this will be used to determine a score multiplier
 @app.post("/points")
-def get_points(name: str):
+def get_points(player: Player):
     query = """
     WITH QuartileData AS (
     SELECT
@@ -236,5 +236,12 @@ def get_points(name: str):
     """
     conn = sqlite3.connect('teammateGrid.db')
     cursor = conn.cursor()
-    result=cursor.execute(query,(name,)).fetchone()
-    return {"mult":result[1]}
+    result=cursor.execute(query,(player.name,)).fetchone()[1]
+    mult = 4
+    if(result ==4):
+        mult=1
+    if(result ==3):
+        mult=2
+    if(result == 2):
+        mult =3 
+    return {"mult":mult}
