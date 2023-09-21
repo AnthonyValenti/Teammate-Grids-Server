@@ -1249,7 +1249,7 @@ INSERT INTO playerNames (name, points) VALUES ('Marco Kasper', 0);
 INSERT INTO playerNames (name, points) VALUES ('Anton Levtchi', 0);
 
 -- Table: scores
-CREATE TABLE IF NOT EXISTS scores (username STRING REFERENCES users (username) PRIMARY KEY, score INTEGER NOT NULL, date DATE NOT NULL);
+CREATE TABLE IF NOT EXISTS scores (username STRING REFERENCES users (username), score INTEGER NOT NULL, date STRING NOT NULL);
 
 -- Table: skaters20to22
 CREATE TABLE IF NOT EXISTS skaters20to22 (

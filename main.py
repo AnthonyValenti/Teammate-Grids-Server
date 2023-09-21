@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 import random
+import datetime
+
 
 app = FastAPI()
 
@@ -21,6 +23,13 @@ def createDB():
 class User(BaseModel):
     username: str
     password: str
+
+class Player(BaseModel):
+    name: str
+
+class Score(BaseModel):
+    username: str
+    score: int
 
 createDB()
 
@@ -39,8 +48,7 @@ app.add_middleware(
 )
 
 
-class Player(BaseModel):
-    name: str
+
 
 
 def getPlayerQuery():
@@ -245,3 +253,27 @@ def get_points(player: Player):
     if(result == 2):
         mult =3 
     return {"mult":mult}
+
+@app.post("/savePoints")
+def save_points(scores: Score):
+    conn = sqlite3.connect('teammateGrid.db')
+    cursor = conn.cursor()
+    msg=""
+    try:
+        date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute("INSERT INTO scores (username, score, date) VALUES (?, ?, ?);", (scores.username, scores.score, date ))
+        conn.commit()
+        msg="ok"
+    except sqlite3.IntegrityError:
+        msg="failed"
+    except Exception as e:
+        msg="failed"
+    finally:
+        conn.close()    
+        return{
+            "msg": msg,
+            "user": scores.username,
+            "score": scores.score,
+            "date": date,
+        }
+
