@@ -27,10 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# will receive a list containing of 3 players to validate 
-# playerNames[0] will be the player on the row
-# playerNames[1] will be the player on the col
-# playerNames[2] will be the users entered answer
+
 class PlayerList(BaseModel):
     playerNames: List[str]
 
