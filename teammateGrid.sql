@@ -3,9 +3,7 @@ PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
 -- Drop all tables if exists
 DROP TABLE IF EXISTS playerNames;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS skaters20to22;
-DROP TABLE IF EXISTS scores;
 
 -- Table: playerNames
 CREATE TABLE IF NOT EXISTS playerNames  (name TEXT, points INTEGER);
@@ -6628,7 +6626,6 @@ INSERT INTO skaters20to22 (column1, column2, column3, column4, column5, column6,
 
 -- Table: users
 CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL);
-INSERT INTO users (username, password) VALUES ('test', '123');
 
 COMMIT TRANSACTION;
 PRAGMA foreign_keys = on;
