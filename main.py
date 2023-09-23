@@ -115,8 +115,6 @@ def getRandomPlayedWith(player):
     random.shuffle(resultList)
     resultList.remove(player)
     name=resultList[0]
-    if(len(getSolution(name,player))<2):
-        getRandomPlayedWith(player)
     return(name)
         
 
@@ -142,10 +140,6 @@ def getSolution(rowPlayer,colPlayer):
     conn.close()
     intersection = [item for item in playedWithColPlayer if item in playedWithRowPlayer]
     intersection = list(filter(None, intersection))
-    if rowPlayer in intersection:
-        intersection.remove(rowPlayer)
-    if colPlayer in intersection:
-        intersection.remove(colPlayer)
     return intersection
 
 def generateNames():
@@ -154,14 +148,9 @@ def generateNames():
     player2=getRandomPlayedWith(player1)
     player3=getRandomPlayedWith(player2)
     if None in [player0, player1, player2, player3]:
+        print('here')
         return generateNames()  
     names = [player0, player1, player2, player3]
-    if len(names) != len(set(names)):
-        return generateNames()  
-    if playedTogethor(player0, player2):
-        return generateNames()
-    if playedTogethor(player1, player3):
-        return generateNames()  
     return names
 
 # This endpoint will return the row player names and col player names to be used for the game
