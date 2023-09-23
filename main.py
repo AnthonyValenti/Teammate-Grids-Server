@@ -119,6 +119,9 @@ def getRandomPlayedWith(player):
         
 
 
+
+  
+  
   
 def getSolution(rowPlayer,colPlayer):
     conn = sqlite3.connect('teammateGrid.db')
@@ -151,6 +154,8 @@ def generateNames():
         return generateNames()  
     names = [player0, player1, player2, player3]
     if len(names) != len(set(names)):
+        return generateNames()
+    if any(name is None for name in names):
         return generateNames()  
     return names
 
@@ -277,3 +282,7 @@ def get_user_scores(user: Player):
     cursor = conn.cursor()
     result=cursor.execute(query,(user.name,)).fetchall()
     return {"scores": result}
+
+@app.post("/validate")
+def check_solution(player1: Player, player2: Player):
+    return getSolution(player1,player2)
