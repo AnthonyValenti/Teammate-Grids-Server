@@ -285,4 +285,4 @@ def get_user_scores(user: Player):
 
 @app.post("/validate")
 def check_solution(player1: Player, player2: Player):
-    return getSolution(player1,player2)
+    return getSolution(player1.name,player2.name)
